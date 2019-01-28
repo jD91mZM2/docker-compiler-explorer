@@ -1,0 +1,16 @@
+version: "3"
+services:
+  compiler-explorer:
+    build: .
+    ports:
+      - "8080:80"
+    networks:
+      - default
+
+# When a VPN is enabled, docker-compose refuses to work. This bypasses that by
+# creating a separate docker network that somehow works better.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 192.168.9.0/24
