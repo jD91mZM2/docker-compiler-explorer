@@ -1,9 +1,12 @@
 version: "3"
 services:
   compiler-explorer:
-    build: .
+    build:
+      context: .
+      args:
+        path_prefix: compiler-explorer
     ports:
-      - "8080:80"
+      - 8080:80
     networks:
       - default
 
