@@ -1,0 +1,23 @@
+--- docker-compose.yml	2019-01-31 22:07:27.318769586 +0100
++++ docker-compose.yml	2019-01-31 22:07:43.521782515 +0100
+@@ -5,15 +5,13 @@
+       context: .
+       args:
+         path_prefix: compiler-explorer
+-    ports:
+-      - 8080:80
+     networks:
+       - default
++    labels:
++      traefik.enable: true
++      traefik.frontend.rule: "PathPrefix:/compiler-explorer/,/vs/"
+ 
+-# When a VPN is enabled, docker-compose refuses to work. This bypasses that by
+-# creating a separate docker network that somehow works better.
+ networks:
+   default:
+-    ipam:
+-      config:
+-        - subnet: 192.168.9.0/24
++    external:
++      name: traefik_default
