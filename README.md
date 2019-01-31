@@ -19,7 +19,7 @@ What does this image has to offer that most alternatives do not?
  - Supports C, C++, Fortran, Go, Haskell, OCaml, Rust and Zig.
  - Does some nginx hackiness to get the otherwise fairly bad (sorry Godbolt)
    custom path prefix to work using the build-time option `path_prefix`.
- - Doesn't the main program run as the root user.
+ - Doesn't run the main program as the root user.
 
 # Screenshot
 
