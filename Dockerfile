@@ -13,14 +13,11 @@ WORKDIR /tmp
 RUN groupadd users || true
 RUN useradd -m -G users user
 
-# Workarounds
-## sudo and su work pretty bad with docker
-RUN apt-get install -y gosu
-## Fix Ctrl+C due to special handling of processes with PID 1.
-## For an excellent explanation, read https://github.com/Yelp/dumb-init.
+# Fix Ctrl+C due to special handling of processes with PID 1.
+# For an excellent explanation, read https://github.com/Yelp/dumb-init.
 RUN apt-get install -y dumb-init
 
-# Support different programming languages...
+# Support different programming languages
 ## Haskell
 RUN apt-get install -y cabal-install ghc
 ## Rust (per-user)
@@ -40,6 +37,9 @@ RUN apt-get install -y clang gccgo gdc gfortran nasm ocaml
 # Compile the compiler explorer
 COPY --chown=user:users compiler-explorer /home/user/compiler-explorer
 WORKDIR /home/user/compiler-explorer
+## Path prefix
+ARG path_prefix
+RUN echo "httpRoot=/$path_prefix" >> etc/config/compiler-explorer.defaults.properties
 USER user
 RUN make prereqs
 USER root
@@ -50,17 +50,8 @@ RUN sed -i "s|^\(demangler=\).*$|\1d/demangle|g" etc/config/d.defaults.propertie
 RUN sed -i "s|^\(compilers=\).*$|\1rustc|g" etc/config/rust.defaults.properties
 RUN sed -i "s|^\(compilers=\).*$|\1zig|g" etc/config/zig.defaults.properties
 
-# Path prefix
-ARG path_prefix
-RUN echo "httpRoot=/$path_prefix" >> etc/config/compiler-explorer.defaults.properties
-## Install nginx to solve some issues
-RUN apt-get install -y nginx
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY index.html /var/www/index.html
-RUN sed -i "s|/prefix|/$path_prefix|g" /etc/nginx/nginx.conf /var/www/index.html
-RUN nginx -t
-
 # Run
-EXPOSE 80/tcp
+USER user
+EXPOSE 8080/tcp
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["bash", "-c", "service nginx start && gosu user bash -c 'cd ~/compiler-explorer; ./app.js'"]
+CMD ["./app.js", "--port", "8080"]
