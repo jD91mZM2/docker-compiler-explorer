@@ -13,10 +13,6 @@ WORKDIR /tmp
 RUN groupadd users || true
 RUN useradd -m -G users user
 
-# Fix Ctrl+C due to special handling of processes with PID 1.
-# For an excellent explanation, read https://github.com/Yelp/dumb-init.
-RUN apt-get install -y dumb-init
-
 # Support different programming languages
 ## Haskell
 RUN apt-get install -y cabal-install ghc
@@ -53,5 +49,4 @@ RUN sed -i "s|^\(compilers=\).*$|\1zig|g" etc/config/zig.defaults.properties
 # Run
 USER user
 EXPOSE 8080/tcp
-ENTRYPOINT ["dumb-init", "--"]
 CMD ["./app.js", "--port", "8080"]
